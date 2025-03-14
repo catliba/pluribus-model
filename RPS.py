@@ -32,44 +32,32 @@ def get_regrets(payoff: int, opp_action: Action) -> np.ndarray:
 
 # Parameters
 num_iterations = 10000
-opp_strategy = [0.2, 0.2, 0.6]  # Probability distribution for opponent
+opp_strategy = [0.2, 0.2, 0.6]
 
-# Tracking
 cumulative_regrets = np.zeros(len(Action), dtype=int)
 strategy_sum = np.zeros(len(Action), dtype=float)
 
-# For plotting the probability of each action over iterations
 rock_probs = []
 paper_probs = []
 scissors_probs = []
 
 for i in range(num_iterations):
-    # 1. Compute current strategy via regret matching
     strategy = get_strategy(cumulative_regrets)
-    
-    # 2. Update the running total of strategies
     strategy_sum += strategy
-    
-    # 3. Compute the average strategy (from start up to now)
     avg_strategy = strategy_sum / (i + 1)
     
-    # 4. Store the average probabilities for each action
     rock_probs.append(avg_strategy[Action.ROCK.value])
     paper_probs.append(avg_strategy[Action.PAPER.value])
     scissors_probs.append(avg_strategy[Action.SCISSORS.value])
     
-    # 5. Choose actions (our action vs opponent)
     our_action = random.choices(list(Action), weights=strategy)[0]
     opp_action = random.choices(list(Action), weights=strategy)[0]
     
-    # 6. Compute payoff and regrets
     our_payoff = get_payoff(our_action, opp_action)
     regrets = get_regrets(our_payoff, opp_action)
     
-    # 7. Update cumulative regrets
     cumulative_regrets += regrets
 
-# Plot the probabilities of Rock, Paper, Scissors in the average strategy
 plt.plot(rock_probs, label="Rock")
 plt.plot(paper_probs, label="Paper")
 plt.plot(scissors_probs, label="Scissors")
